@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CBI-Inspired Career Reflection</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="max-w-4xl mx-auto p-6 bg-white shadow-xl mt-10 rounded-xl">
+    <h1 class="text-3xl font-bold text-center mb-6">Career Beliefs Reflection Questionnaire</h1>
+    <p class="text-gray-700 mb-4">Rate each statement below from 1 (Strongly Disagree) to 5 (Strongly Agree).</p>
+    <form id="cbiForm" class="space-y-8">
+    </form>
+    <div class="mt-6 text-center">
+      <button onclick="calculateResults()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded">
+        Submit
+      </button>
+    </div>
+    <div id="results" class="mt-10 hidden">
+      <h2 class="text-2xl font-bold text-center mb-4">Your Results</h2>
+      <p id="flaggedArea" class="text-lg text-center"></p>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      "I need to be 100% sure before I choose a career.",
+      "I’m afraid I’ll regret my career choice later.",
+      "I feel overwhelmed by too many options.",
+      "I often avoid thinking about my future career.",
+      "I don’t know what careers fit my interests.",
+      "I’m unsure where to find reliable career info.",
+      "I don’t understand what employers really want.",
+      "I don’t know how to research job opportunities.",
+      "I don’t think I have the right skills for good jobs.",
+      "I worry I’m not smart enough for certain careers.",
+      "I don’t know how to develop job-specific skills.",
+      "I believe I need a perfect resume to succeed.",
+      "My background limits the careers I can pursue.",
+      "I believe people like me face unfair obstacles.",
+      "I can’t afford the training needed for good jobs.",
+      "My responsibilities (family, etc.) limit my options.",
+      "If I wait long enough, the right job will appear.",
+      "There’s only one perfect career for me.",
+      "If I fail once, it means I chose the wrong path.",
+      "A good career should never feel stressful."
+    ];
+
+    const categories = {
+      DMC: [0,1,2,3],
+      NCI: [4,5,6,7],
+      JS:  [8,9,10,11],
+      PB:  [12,13,14,15],
+      UE:  [16,17,18,19]
+    };
+
+    const form = document.getElementById('cbiForm');
+    questions.forEach((q, i) => {
+      const qBlock = document.createElement('div');
+      qBlock.classList.add('space-y-2');
+      qBlock.innerHTML = `
+        <label class="block font-semibold">Q${i+1}. ${q}</label>
+        <select name="q${i+1}" class="w-full border border-gray-300 rounded p-2" required>
+          <option value="">Select</option>
+          <option value="1">1 - Strongly Disagree</option>
+          <option value="2">2 - Disagree</option>
+          <option value="3">3 - Neutral</option>
+          <option value="4">4 - Agree</option>
+          <option value="5">5 - Strongly Agree</option>
+        </select>
+      `;
+      form.appendChild(qBlock);
+    });
+
+    function calculateResults() {
+      const values = Array.from(document.querySelectorAll('select')).map(s => parseInt(s.value));
+      if (values.includes(NaN)) return alert("Please answer all questions.");
+
+      const scores = {};
+      for (const [cat, idxs] of Object.entries(categories)) {
+        scores[cat] = idxs.reduce((sum, i) => sum + values[i], 0) / 4;
+      }
+
+      const highest = Object.entries(scores).reduce((a, b) => a[1] > b[1] ? a : b);
+      document.getElementById('results').classList.remove('hidden');
+      document.getElementById('flaggedArea').innerText = `Flagged Area: ${highest[0]} (Score: ${highest[1].toFixed(2)})`;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
